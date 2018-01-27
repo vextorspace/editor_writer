@@ -2,16 +2,17 @@ package com.ronnev.editorselection
 
 import java.io.File
 import java.util
+import java.util.Comparator
 
 import scala.beans.BeanProperty
 
 class SchoolClass {
-    @BeanProperty var students: java.util.List[Student] = new util.ArrayList[Student]()
+    @BeanProperty var students: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
 
-    def addStudent(name: String) : Unit = students.add(Student(name))
+    def addStudent(name: String) : Unit = students.add(name)
 
-    def removeStudent(name: String) : Unit = students.removeIf(_.name == name)
+    def removeStudent(name: String) : Unit = students.removeIf(_ == name)
 
     def makeNewAssignment() : GroupAssignment = {
         val group = GroupAssignment()
@@ -21,7 +22,11 @@ class SchoolClass {
     }
 
     def acceptGroupAssignment(groupAssignment: GroupAssignment) : Unit = {
+        object GroupDateComparator extends Comparator[GroupAssignment] {
+            override def compare(o1: GroupAssignment, o2: GroupAssignment): Int = o1.date.compareTo(o2.date)
+        }
         history.add(groupAssignment)
+        history.sort(GroupDateComparator)
     }
 }
 
