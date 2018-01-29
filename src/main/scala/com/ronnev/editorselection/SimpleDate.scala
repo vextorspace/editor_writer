@@ -21,7 +21,7 @@ class SimpleDate() extends Comparable[SimpleDate] {
     }
 
     override def toString: String = {
-        f"$year%4d-$month%2d-$day%2d"
+        f"$year%04d-$month%02d-$day%02d"
     }
 
 
@@ -40,10 +40,13 @@ class SimpleDate() extends Comparable[SimpleDate] {
         val state = Seq(year, month, day)
         state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
     }
+
+    def copy() : SimpleDate =  SimpleDate(year, month, day)
 }
 
 object SimpleDate {
     def apply() = new SimpleDate()
+
     def apply(year: Int, month: Int, day: Int) : SimpleDate = {
         val sd = new SimpleDate
         sd.setYear(year)
@@ -75,4 +78,5 @@ object SimpleDate {
 
         return Option.empty
     }
+
 }

@@ -1,5 +1,6 @@
 package com.ronnev.editorselection
 
+import com.ronnev.editorselection.assignment.GroupAssignment
 import org.scalatest.FeatureSpec
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
@@ -83,32 +84,83 @@ class SchoolClassSpec extends FeatureSpec {
     }
 
     feature("History GroupAssignments are kept in date order") {
-        scenario("Adding an earlier group assignment puts it before in the list")
-        val text =
-            """
-              |students: ["fred", "barney", "wilma", "betty"]
-              |history:
-              |  - date: {year: 2010, month: 07, day: 17}
-              |    groupA: ["fred", "barney"]
-              |    groupB: ["wilma", "betty"]
-              |    assignmentsA:
-              |      fred: ["wilma", "betty"]
-              |      barney: []
-              |    assignmentsB:
-              |      wilma: ["fred"]
-              |      betty: ["barney"]
-            """.stripMargin
+        scenario("Adding an earlier group assignment puts it before in the list") {
+            val text =
+                """
+                  |students: ["fred", "barney", "wilma", "betty"]
+                  |history:
+                  |  - date: {year: 2010, month: 07, day: 17}
+                  |    groupA: ["fred", "barney"]
+                  |    groupB: ["wilma", "betty"]
+                  |    assignmentsA:
+                  |      fred: ["wilma", "betty"]
+                  |      barney: []
+                  |    assignmentsB:
+                  |      wilma: ["fred"]
+                  |      betty: ["barney"]
+                """.stripMargin
 
-        val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
-        val schoolClass = yaml.load(text).asInstanceOf[SchoolClass]
+            val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
+            val schoolClass = yaml.load(text).asInstanceOf[SchoolClass]
+            val newAssignment = GroupAssignment("2009-08-12")
 
-    }
+            schoolClass.acceptGroupAssignment(newAssignment)
 
-    scenario("adding a later group assignment puts it later in the list") {
+            assert(schoolClass.history.get(0).date == SimpleDate("2009-08-12").get)
+        }
 
-    }
+        scenario("adding a later group assignment puts it later in the list") {
+            val text =
+                """
+                  |students: ["fred", "barney", "wilma", "betty"]
+                  |history:
+                  |  - date: {year: 2010, month: 07, day: 17}
+                  |    groupA: ["fred", "barney"]
+                  |    groupB: ["wilma", "betty"]
+                  |    assignmentsA:
+                  |      fred: ["wilma", "betty"]
+                  |      barney: []
+                  |    assignmentsB:
+                  |      wilma: ["fred"]
+                  |      betty: ["barney"]
+                """.stripMargin
 
-    scenario("adding a group assignment of the same date replaces it") {
-        
+            val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
+            val schoolClass = yaml.load(text).asInstanceOf[SchoolClass]
+            val newAssignment = GroupAssignment("2010-07-20")
+
+            schoolClass.acceptGroupAssignment(newAssignment)
+
+            assert(schoolClass.history.get(1).date == SimpleDate("2010-07-20").get)
+        }
+
+        scenario("adding a group assignment of the same date replaces it") {
+            val text =
+                """
+                  |students: ["fred", "barney", "wilma", "betty"]
+                  |history:
+                  |  - date: {year: 2010, month: 07, day: 17}
+                  |    groupA: ["fred", "barney"]
+                  |    groupB: ["wilma", "betty"]
+                  |    assignmentsA:
+                  |      fred: ["wilma", "betty"]
+                  |      barney: []
+                  |    assignmentsB:
+                  |      wilma: ["fred"]
+                  |      betty: ["barney"]
+                """.stripMargin
+
+            val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
+            val schoolClass = yaml.load(text).asInstanceOf[SchoolClass]
+            val newAssignment = GroupAssignment("2010-07-17")
+
+            schoolClass.acceptGroupAssignment(newAssignment)
+
+            assert(schoolClass.history.size() == 1)
+            assert(schoolClass.history.get(0).groupA.isEmpty)
+            assert(schoolClass.history.get(0).groupB.isEmpty)
+            assert(schoolClass.history.get(0).assignmentsA.isEmpty)
+            assert(schoolClass.history.get(0).assignmentsB.isEmpty)
+        }
     }
 }

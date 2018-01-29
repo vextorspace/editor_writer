@@ -1,7 +1,8 @@
-package com.ronnev.editorselection
+package com.ronnev.editorselection.assignment
 
-import java.text.SimpleDateFormat
 import java.util
+
+import com.ronnev.editorselection.SimpleDate
 
 import scala.beans.BeanProperty
 
@@ -22,7 +23,7 @@ class GroupAssignment {
             return true
         }
 
-        return false
+        false
     }
 
     private def addToAssignment(assignments: java.util.Map[String, java.util.LinkedHashSet[String]], editor: String, writer: String): Unit = {
@@ -39,14 +40,27 @@ class GroupAssignment {
         val newDate = SimpleDate(dateString)
         newDate.foreach(date = _)
     }
+
+    def copy() : GroupAssignment = {
+        val newGroup = GroupAssignment(date.copy())
+        newGroup.groupA = new util.HashSet[String](groupA)
+        newGroup.groupB = new util.HashSet[String](groupB)
+
+        newGroup
+    }
 }
 
 object GroupAssignment {
     def apply() = new GroupAssignment()
 
-    def apply(dateString: String): GroupAssignment = {
-        val groupAssignment = new GroupAssignment()
-        groupAssignment.dateFromString(dateString)
+    def apply(dateString: String): GroupAssignment = GroupAssignment.apply(SimpleDate(dateString).getOrElse(SimpleDate()))
+
+
+    def apply(date: SimpleDate) : GroupAssignment = {
+
+        val groupAssignment = new GroupAssignment
+        groupAssignment.date = date
+
         groupAssignment
     }
 }

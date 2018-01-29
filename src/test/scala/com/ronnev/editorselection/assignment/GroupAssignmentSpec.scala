@@ -1,11 +1,12 @@
-package com.ronnev.editorselection
+package com.ronnev.editorselection.assignment
 
 import java.util
 
+import com.ronnev.editorselection.SimpleDate
 import org.scalatest.FeatureSpec
-import org.yaml.snakeyaml.{DumperOptions, Yaml}
 import org.yaml.snakeyaml.constructor.Constructor
 import org.yaml.snakeyaml.nodes.Tag
+import org.yaml.snakeyaml.{DumperOptions, Yaml}
 
 class GroupAssignmentSpec extends FeatureSpec {
 
@@ -207,6 +208,31 @@ class GroupAssignmentSpec extends FeatureSpec {
             assert(group.assignmentsA.isEmpty)
             assert(group.assignmentsB.isEmpty)
 
+        }
+    }
+
+    feature("A copy can be made and altering it doesn't affect the first") {
+
+        scenario("copy of an empty group") {
+            val groupAssignment1: GroupAssignment = GroupAssignment()
+            val groupAssignment2: GroupAssignment = groupAssignment1.copy
+
+            groupAssignment2.groupA.add("fred")
+
+            assert( ! groupAssignment1.groupA.contains("fred"))
+            assert( groupAssignment2.groupA.contains("fred"))
+        }
+
+        scenario("copy of a filled out group") {
+            val groupAssignment1: GroupAssignment = GroupAssignment()
+            groupAssignment1.groupA.add("ted")
+
+            val groupAssignment2: GroupAssignment = groupAssignment1.copy
+
+            groupAssignment2.groupA.add("fred")
+
+            assert( ! groupAssignment1.groupA.contains("fred"))
+            assert( groupAssignment2.groupA.contains("fred"))
         }
     }
 }
