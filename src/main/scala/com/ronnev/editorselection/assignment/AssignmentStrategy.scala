@@ -1,5 +1,5 @@
 package com.ronnev.editorselection.assignment
 
 trait AssignmentStrategy {
-    def makeAssigments(unassignedGroup: GroupAssignment) : GroupAssignment
+    def makeAssigments(history: java.util.List[GroupAssignment], unassignedGroup: GroupAssignment, writersPerEditor: Int) : GroupAssignment
 }

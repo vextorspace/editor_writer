@@ -12,6 +12,7 @@ class SchoolClass {
     @BeanProperty var students: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
     @BeanProperty var strategy: AssignmentStrategy = null
+    @BeanProperty var maxWritersPerEditor: Int = 4
 
     def addStudent(name: String) : Unit = students.add(name)
 
@@ -20,7 +21,7 @@ class SchoolClass {
     def makeNewAssignment(date: SimpleDate) : GroupAssignment = {
         val group = GroupAssignment(date)
         // -- magic goes here
-        strategy.makeAssigments(group)
+        strategy.makeAssigments(history, group, maxWritersPerEditor)
     }
 
     def acceptGroupAssignment(groupAssignment: GroupAssignment) : Unit = {

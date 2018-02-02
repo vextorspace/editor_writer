@@ -12,6 +12,7 @@ class SchoolClassSpec extends FeatureSpec {
                 """
                   |students: []
                   |history: []
+                  |maxWritersPerEditor: 3
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
@@ -19,6 +20,7 @@ class SchoolClassSpec extends FeatureSpec {
 
             assert(schoolClass.history.isEmpty)
             assert(schoolClass.students.isEmpty)
+            assert(schoolClass.maxWritersPerEditor == 3)
         }
 
         scenario("A class with some students") {
@@ -26,6 +28,7 @@ class SchoolClassSpec extends FeatureSpec {
                 """
                   |students: ["fred", "wilma", "betty"]
                   |history: []
+                  |maxWritersPerEditor: 2
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
@@ -33,6 +36,7 @@ class SchoolClassSpec extends FeatureSpec {
 
             assert(schoolClass.history.isEmpty)
             assert(schoolClass.students.toArray.toList == List("fred", "wilma", "betty"))
+            assert(schoolClass.maxWritersPerEditor == 2)
         }
 
         scenario("A class with some students and history") {
@@ -58,6 +62,7 @@ class SchoolClassSpec extends FeatureSpec {
                   |    assignmentsB:
                   |      wilma: ["barney"]
                   |      betty: ["fred"]
+                  |maxWritersPerEditor: 3
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
@@ -65,6 +70,7 @@ class SchoolClassSpec extends FeatureSpec {
 
             assert(schoolClass.students.toArray.toList == List("fred", "barney", "wilma", "betty"))
 
+            assert(schoolClass.maxWritersPerEditor == 3)
             assert(schoolClass.history.get(0).date == SimpleDate("2010-07-17").get)
             assert(schoolClass.history.get(0).groupA.toArray.toList == List("fred", "barney"))
             assert(schoolClass.history.get(0).groupB.toArray.toList == List("wilma", "betty"))
@@ -98,6 +104,7 @@ class SchoolClassSpec extends FeatureSpec {
                   |    assignmentsB:
                   |      wilma: ["fred"]
                   |      betty: ["barney"]
+                  |maxWritersPerEditor: 3
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
@@ -123,6 +130,7 @@ class SchoolClassSpec extends FeatureSpec {
                   |    assignmentsB:
                   |      wilma: ["fred"]
                   |      betty: ["barney"]
+                  |maxWritersPerEditor: 3
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
@@ -148,6 +156,7 @@ class SchoolClassSpec extends FeatureSpec {
                   |    assignmentsB:
                   |      wilma: ["fred"]
                   |      betty: ["barney"]
+                  |maxWritersPerEditor: 3
                 """.stripMargin
 
             val yaml = new Yaml(new Constructor(classOf[SchoolClass]))
