@@ -2,9 +2,12 @@ package com.ronnev.editorselection.assignment
 
 import java.util
 
+import collection.JavaConverters._
 import com.ronnev.editorselection.SimpleDate
 
 import scala.beans.BeanProperty
+import scala.collection.mutable
+
 
 class GroupAssignment {
     @BeanProperty var groupA: java.util.Set[String] = new util.LinkedHashSet[String]()
@@ -15,15 +18,36 @@ class GroupAssignment {
 
     def addWriterToEditor(editor: String, writer: String) : Boolean = {
         if (groupA.contains(editor) && groupB.contains(writer)) {
-            addToAssignment(assignmentsA, editor, writer)
+            addToAssignment(assignmentsB, editor, writer)
             return true
         }
         if (groupB.contains(editor) && groupA.contains(writer)) {
-            addToAssignment(assignmentsB, editor, writer)
+            addToAssignment(assignmentsA, editor, writer)
             return true
         }
 
         false
+    }
+
+    def editorsPerWriterA() : Map[String, Set[String]] = {
+        editorsPerWriter(assignmentsA)
+    }
+
+    def editorsPerWriterB() : Map[String, Set[String]] = {
+        editorsPerWriter(assignmentsB)
+    }
+
+    def editorsPerWriter(assignments: java.util.Map[String, java.util.LinkedHashSet[String]]) : Map[String, Set[String]] = {
+        val newKeys: Set[String] = assignments.asScala.values.flatMap(_.asScala).toSet
+        val newMap = mutable.Map[String, Set[String]]()
+
+        newKeys.foreach(key => newMap(key) = editorsFor(assignments, key))
+
+        newMap.toMap
+    }
+
+    def editorsFor(assignments: java.util.Map[String, java.util.LinkedHashSet[String]], writer: String) : Set[String] = {
+        assignments.asScala.filter{_._2.contains(writer)}.map(_._1).toSet
     }
 
     private def addToAssignment(assignments: java.util.Map[String, java.util.LinkedHashSet[String]], editor: String, writer: String): Unit = {

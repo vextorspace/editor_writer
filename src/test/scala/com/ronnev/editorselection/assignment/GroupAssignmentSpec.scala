@@ -128,18 +128,18 @@ class GroupAssignmentSpec extends FeatureSpec {
 
             assert(true == group.addWriterToEditor("fred", "barney"))
 
-            assert(group.assignmentsB.isEmpty)
-            assert(group.assignmentsA.get("fred").toArray.toList == List("barney"))
+            assert(group.assignmentsA.isEmpty)
+            assert(group.assignmentsB.get("fred").toArray.toList == List("barney"))
 
             assert(true == group.addWriterToEditor("fred", "wilma"))
 
-            assert(group.assignmentsA.get("fred").toArray.toList == List("barney", "wilma"))
+            assert(group.assignmentsB.get("fred").toArray.toList == List("barney", "wilma"))
 
-            assert(group.assignmentsB.isEmpty)
+            assert(group.assignmentsA.isEmpty)
 
             assert(true == group.addWriterToEditor("barney", "fred"))
 
-            assert(group.assignmentsB.get("barney").toArray.toList == List("fred"))
+            assert(group.assignmentsA.get("barney").toArray.toList == List("fred"))
         }
 
         scenario("A writer editor pair that are in the same group") {
