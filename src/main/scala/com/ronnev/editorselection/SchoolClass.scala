@@ -13,10 +13,38 @@ class SchoolClass {
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
     @BeanProperty var strategy: AssignmentStrategy = null
     @BeanProperty var maxWritersPerEditor: Int = 4
+    @BeanProperty var groupA: java.util.List[String] = new util.ArrayList[String]()
+    @BeanProperty var groupB: java.util.List[String] = new util.ArrayList[String]()
 
     def addStudent(name: String) : Unit = students.add(name)
 
-    def removeStudent(name: String) : Unit = students.removeIf(_ == name)
+    def removeStudent(name: String) : Unit = {
+        students.removeIf(_ == name)
+        groupA.removeIf(_ == name)
+        groupB.removeIf(_ == name)
+    }
+
+    def addStudentToGroupA(name: String) : Boolean = {
+        if (students.contains(name)) {
+            if (!groupA.contains(name)) {
+                groupA.add(name)
+                return true
+            }
+        }
+
+        false
+    }
+
+    def addStudentToGroupB(name: String) : Boolean = {
+        if (students.contains(name)) {
+            if (!groupB.contains(name)) {
+                groupB.add(name)
+                return true
+            }
+        }
+
+        false
+    }
 
     def makeNewAssignment(date: SimpleDate) : GroupAssignment = {
         val group = GroupAssignment(date)

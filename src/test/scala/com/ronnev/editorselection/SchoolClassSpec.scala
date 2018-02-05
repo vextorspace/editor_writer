@@ -11,6 +11,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: []
+                  |groupA: []
+                  |groupB: []
                   |history: []
                   |maxWritersPerEditor: 3
                 """.stripMargin
@@ -27,6 +29,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: ["fred", "wilma", "betty"]
+                  |groupA: ["fred"]
+                  |groupB: ["wilma", "betty"]
                   |history: []
                   |maxWritersPerEditor: 2
                 """.stripMargin
@@ -43,6 +47,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: ["fred", "barney", "wilma", "betty"]
+                  |groupA: ["fred", "barney"]
+                  |groupB: ["wilma", "betty"]
                   |history:
                   |  - date: {year: 2010, month: 07, day: 17}
                   |    groupA: ["fred", "barney"]
@@ -94,6 +100,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: ["fred", "barney", "wilma", "betty"]
+                  |groupA: ["fred", "barney"]
+                  |groupB: ["wilma", "betty"]
                   |history:
                   |  - date: {year: 2010, month: 07, day: 17}
                   |    groupA: ["fred", "barney"]
@@ -120,6 +128,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: ["fred", "barney", "wilma", "betty"]
+                  |groupA: ["fred", "barney"]
+                  |groupB: ["wilma", "betty"]
                   |history:
                   |  - date: {year: 2010, month: 07, day: 17}
                   |    groupA: ["fred", "barney"]
@@ -146,6 +156,8 @@ class SchoolClassSpec extends FeatureSpec {
             val text =
                 """
                   |students: ["fred", "barney", "wilma", "betty"]
+                  |groupA: ["fred", "barney"]
+                  |groupB: ["wilma", "betty"]
                   |history:
                   |  - date: {year: 2010, month: 07, day: 17}
                   |    groupA: ["fred", "barney"]

@@ -14,6 +14,10 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
 
     def needsSaving = saveNeeded
 
+    def setNeedsSaving() : Unit = {
+        saveNeeded = true
+    }
+
     def getSchoolClass() : SchoolClass = schoolClass
 
     def loadSchoolClass() : Boolean = {

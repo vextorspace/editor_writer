@@ -48,6 +48,8 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
 
     private def displayStudents = {
         studentsDisplay.displayStudents(fileManager.getSchoolClass().students.asScala.toList)
+        studentsDisplay.displayGroupA(fileManager.getSchoolClass().groupA.asScala.toList)
+        studentsDisplay.displayGroupB(fileManager.getSchoolClass().groupB.asScala.toList)
     }
 
     private def studentRemover: Unit = {
