@@ -12,8 +12,10 @@ class DialogSaveFileGetter(val ownerWindow: Window) extends SaveFileGetter {
     private def makeDialog(oldFile: File, title: String) = {
         val fileDialog = new FileChooser()
         fileDialog.setTitle(title)
-        fileDialog.setInitialDirectory(oldFile.getParentFile)
-        fileDialog.setInitialFileName(oldFile.getName)
+        if (oldFile != null) {
+            fileDialog.setInitialDirectory(oldFile.getParentFile)
+            fileDialog.setInitialFileName(oldFile.getName)
+        }
 
         val extFilter = new FileChooser.ExtensionFilter("class files (*.clss)", "*.clss")
         fileDialog.getExtensionFilters().add(extFilter)
