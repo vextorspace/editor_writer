@@ -2,7 +2,7 @@ package com.ronnev.editorselection.assignment
 
 import java.util
 
-import com.ronnev.editorselection.SimpleDate
+import com.ronnev.editorselection.dates.SimpleDate
 import org.scalatest.FeatureSpec
 import org.yaml.snakeyaml.constructor.Constructor
 import org.yaml.snakeyaml.nodes.Tag
@@ -88,15 +88,15 @@ class GroupAssignmentSpec extends FeatureSpec {
             group.groupB.add("barney")
             group.groupB.add("wilma")
 
-            val fredsAssignments = new util.LinkedHashSet[String]()
+            val fredsAssignments = new util.ArrayList[String]()
             fredsAssignments.add("barney")
             fredsAssignments.add("wilma")
             group.assignmentsA.put("fred", fredsAssignments)
 
-            val bAssignments = new util.LinkedHashSet[String]()
+            val bAssignments = new util.ArrayList[String]()
             bAssignments.add("fred")
 
-            val wAssignments = new util.LinkedHashSet[String]()
+            val wAssignments = new util.ArrayList[String]()
             wAssignments.add("fred")
 
             group.assignmentsB.put("barney", bAssignments)
@@ -117,48 +117,6 @@ class GroupAssignmentSpec extends FeatureSpec {
 
     feature("adding a writer editor pair to an assigment") {
         scenario("A writer editor pair that is good") {
-            val group: GroupAssignment = GroupAssignment()
-            group.groupA.add("fred")
-
-            group.groupB.add("barney")
-            group.groupB.add("wilma")
-
-            assert(group.assignmentsA.isEmpty)
-            assert(group.assignmentsB.isEmpty)
-
-            assert(true == group.addWriterToEditor("fred", "barney"))
-
-            assert(group.assignmentsA.isEmpty)
-            assert(group.assignmentsB.get("fred").toArray.toList == List("barney"))
-
-            assert(true == group.addWriterToEditor("fred", "wilma"))
-
-            assert(group.assignmentsB.get("fred").toArray.toList == List("barney", "wilma"))
-
-            assert(group.assignmentsA.isEmpty)
-
-            assert(true == group.addWriterToEditor("barney", "fred"))
-
-            assert(group.assignmentsA.get("barney").toArray.toList == List("fred"))
-        }
-
-        scenario("A writer editor pair that are in the same group") {
-            val group: GroupAssignment = GroupAssignment()
-            group.groupA.add("fred")
-
-            group.groupB.add("barney")
-            group.groupB.add("wilma")
-
-            assert(group.assignmentsA.isEmpty)
-            assert(group.assignmentsB.isEmpty)
-
-            assert(false == group.addWriterToEditor("barney", "wilma"))
-
-            assert(group.assignmentsB.isEmpty)
-            assert(group.assignmentsA.isEmpty)
-        }
-
-        scenario("A writer editor pair where the writer does not exist") {
             val group: GroupAssignment = GroupAssignment()
             group.groupA.add("fred")
 
@@ -233,6 +191,63 @@ class GroupAssignmentSpec extends FeatureSpec {
 
             assert( ! groupAssignment1.groupA.contains("fred"))
             assert( groupAssignment2.groupA.contains("fred"))
+        }
+    }
+
+    feature("editorsPerWriter can be requested") {
+        scenario("a group with assignments") {
+            val text =
+                """
+                  |groupA: ["fred", "barney", "wilma"]
+                  |groupB: ["betty", "kate", "bob", "ted", "ed"]
+                  |assignmentsA: {"fred": ["betty", "kate"], "barney": ["bob", "ted"]}
+                  |assignmentsB: {"betty": ["fred", "barney", "wilma"]}
+                  |date:
+                  |  year: 2017
+                  |  month: 07
+                  |  day: 17
+                """.stripMargin
+
+            val yaml = new Yaml(new Constructor(classOf[GroupAssignment]))
+            val groupAssignment = yaml.load(text).asInstanceOf[GroupAssignment]
+
+            assert(groupAssignment.editorsPerWriterA().size == 3)
+            assert(groupAssignment.editorsPerWriterA()("fred") == List("betty"))
+            assert(groupAssignment.editorsPerWriterA()("barney") == List("betty"))
+            assert(groupAssignment.editorsPerWriterA()("wilma") == List("betty"))
+
+            assert(groupAssignment.editorsPerWriterB().size == 4)
+            assert(groupAssignment.editorsPerWriterB()("betty") == List("fred"))
+            assert(groupAssignment.editorsPerWriterB()("kate") == List("fred"))
+            assert(groupAssignment.editorsPerWriterB()("bob") == List("barney"))
+            assert(groupAssignment.editorsPerWriterB()("ted") == List("barney"))
+
+        }
+
+        scenario("a group with assignments made one at a time ") {
+            val groupAssignment = GroupAssignment("1975-09-08")
+            groupAssignment.groupA.add("fred")
+            groupAssignment.groupA.add("bob")
+            groupAssignment.groupB.add("kate")
+            groupAssignment.groupB.add("wilma")
+
+            assert(groupAssignment.editorsPerWriterA().isEmpty)
+            assert(groupAssignment.editorsPerWriterB().isEmpty)
+            groupAssignment.addWriterToEditor("fred", "kate")
+            assert(groupAssignment.editorsPerWriterA().isEmpty)
+            assert(groupAssignment.editorsPerWriterB()("kate") == List("fred"))
+            groupAssignment.addWriterToEditor("bob", "wilma")
+            assert(groupAssignment.editorsPerWriterA().isEmpty)
+            assert(groupAssignment.editorsPerWriterB().size == 2)
+            assert(groupAssignment.editorsPerWriterB()("kate") == List("fred"))
+            assert(groupAssignment.editorsPerWriterB()("wilma") == List("bob"))
+            groupAssignment.addWriterToEditor("kate", "bob")
+            assert(groupAssignment.editorsPerWriterA().size == 1)
+            assert(groupAssignment.editorsPerWriterA()("bob") == List("kate"))
+            assert(groupAssignment.editorsPerWriterB().size == 2)
+            assert(groupAssignment.editorsPerWriterB()("kate") == List("fred"))
+            assert(groupAssignment.editorsPerWriterB()("wilma") == List("bob"))
+
         }
     }
 }

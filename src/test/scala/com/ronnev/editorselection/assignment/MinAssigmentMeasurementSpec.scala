@@ -52,9 +52,9 @@ class MinAssigmentMeasurementSpec extends FeatureSpec {
             secondGroup.addWriterToEditor("fred", "ed")
             secondGroup.addWriterToEditor("barney", "melissa")
 
-            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ted" -> Set.empty[String], "ed" -> Set.empty[String], "melissa" -> Set.empty[String]))
+            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ted" -> List.empty[String], "ed" -> List.empty[String], "melissa" -> List.empty[String]))
 
-            assert(MinAssigmentMeasurement.findAddedPairs(secondGroup.editorsPerWriterB(), firstGroup.editorsPerWriterB()) == Map("ted" -> Set.empty[String], "ed" -> Set.empty[String], "melissa" -> Set.empty[String], "mel" -> Set("barney")))
+            assert(MinAssigmentMeasurement.findAddedPairs(secondGroup.editorsPerWriterB(), firstGroup.editorsPerWriterB()) == Map("ted" -> List.empty[String], "ed" -> List.empty[String], "melissa" -> List.empty[String], "mel" -> List("barney")))
         }
 
         scenario("Lists that have one thing added have 1 added") {
@@ -78,7 +78,7 @@ class MinAssigmentMeasurementSpec extends FeatureSpec {
             secondGroup.addWriterToEditor("barney", "melissa")
             secondGroup.addWriterToEditor("barney", "mel")
 
-            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ted"->Set.empty[String], "ed" -> Set("fred"), "melissa" -> Set.empty[String], "mel" -> Set.empty[String]))
+            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ted"->List.empty[String], "ed" -> List("fred"), "melissa" -> List.empty[String], "mel" -> List.empty[String]))
         }
     }
 
@@ -255,7 +255,7 @@ class MinAssigmentMeasurementSpec extends FeatureSpec {
             firstGroup.addWriterToEditor("melissa", "wilma")
             firstGroup.addWriterToEditor("mel", "betty")
 
-            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ed" -> Set("fred"), "ted"->Set("barney"), "mel" -> Set("betty"), "melissa" -> Set("wilma")))
+            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterB(), secondGroup.editorsPerWriterB()) == Map("ed" -> List("fred"), "ted" -> List("barney"), "mel" -> List("betty"), "melissa" -> List("wilma")))
         }
 
         scenario("Another Two lists that have 1 added for each writer") {
@@ -298,7 +298,7 @@ class MinAssigmentMeasurementSpec extends FeatureSpec {
             secondGroup.addWriterToEditor("melissa", "wilma")
             secondGroup.addWriterToEditor("mel", "betty")
 
-            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterA(), secondGroup.editorsPerWriterA()) == Map("fred" -> Set("ed"), "barney"->Set("ted"), "betty" -> Set("mel"), "wilma" -> Set("melissa")))
+            assert(MinAssigmentMeasurement.findAddedPairs(firstGroup.editorsPerWriterA(), secondGroup.editorsPerWriterA()) == Map("fred" -> List("ed"), "barney" -> List("ted"), "betty" -> List("mel"), "wilma" -> List("melissa")))
         }
 
     }

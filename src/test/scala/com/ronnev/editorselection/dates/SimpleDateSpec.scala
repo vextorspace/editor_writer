@@ -1,4 +1,4 @@
-package com.ronnev.editorselection
+package com.ronnev.editorselection.dates
 
 import org.scalatest.FeatureSpec
 

@@ -2,12 +2,12 @@ package com.ronnev.editorselection.files
 
 import java.io.File
 
-import com.ronnev.editorselection.SchoolClass
+import com.ronnev.editorselection.{SchoolClass, StudentChangedListener}
 import javafx.scene.control.ButtonType
 
 import scala.util.Try
 
-class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGetter, val saveFirstAlerter: SaveFirstAlerter) {
+class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGetter, val saveFirstAlerter: SaveFirstAlerter) extends StudentChangedListener {
     private var schoolClass: SchoolClass = SchoolClass()
     private var file: File = null
     private var saveNeeded: Boolean = false
@@ -81,4 +81,13 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
             return false
         saveSchoolClass()
     }
+
+    override def onAdded(student: String) : Unit = {
+        schoolClass.addStudent(student)
+    }
+
+    override def onRemoved(student: String) : Unit = {
+        schoolClass.removeStudent(student)
+    }
+
 }
