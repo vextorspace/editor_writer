@@ -1,11 +1,12 @@
 package com.ronnev.editorselection
 
 import collection.JavaConverters._
-import com.ronnev.editorselection.assignment.{AssignmentStrategy, GroupAssignment, MinAssigmentMeasurement, RandomAssignmentStrategy}
+import com.ronnev.editorselection.assignment.{AssignmentStrategy, ComboRestrictionAssignmentStrategy, GroupAssignment, MinAssigmentMeasurement}
 import java.io.File
 import java.util
 import java.util.Comparator
 
+import com.ronnev.editorselection.assignment.restrictions.{AssignmentRestriction, BadPairRestriction, HistoryRestriction}
 import com.ronnev.editorselection.dates.SimpleDate
 
 import scala.beans.BeanProperty
@@ -13,7 +14,6 @@ import scala.beans.BeanProperty
 class SchoolClass {
     @BeanProperty var students: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
-    @BeanProperty var strategy: AssignmentStrategy = RandomAssignmentStrategy
     @BeanProperty var editorsPerWriter: Int = 3
     @BeanProperty var groupA: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var groupB: java.util.List[String] = new util.ArrayList[String]()
@@ -81,16 +81,11 @@ class SchoolClass {
     def makeNewAssignment(date: SimpleDate) : GroupAssignment = {
         var group = makeEmptyNewAssigmnent(date)
 
+        val restrictions: List[AssignmentRestriction] = exclusions.asScala.toList.map(exclusion => {BadPairRestriction(exclusion.get(1), exclusion.get(2))})
+                                                                  .union(List(HistoryRestriction(history.asScala.toList)))
+        val strategy = ComboRestrictionAssignmentStrategy(restrictions)
 
-        if (strategy == null)
-            strategy = RandomAssignmentStrategy
-
-        group = strategy.makeAssignments(history, group, editorsPerWriter)
-
-        while(MinAssigmentMeasurement.measurement(history, group) < 1)
-            group = strategy.makeAssignments(history, group, editorsPerWriter)
-
-        group
+        strategy.makeAssignments(group, editorsPerWriter)
     }
 
     def acceptGroupAssignment(groupAssignment: GroupAssignment) : Unit = {

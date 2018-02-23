@@ -13,3 +13,7 @@ class BadPairRestriction(val person1: String, val person2: String) extends Assig
         }
     }
 }
+
+object BadPairRestriction {
+    def apply(person1: String, person2: String) = new BadPairRestriction(person1, person2)
+}
