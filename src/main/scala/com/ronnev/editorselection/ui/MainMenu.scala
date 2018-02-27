@@ -10,7 +10,7 @@ import javafx.scene.control._
 import com.ronnev.editorselection.dates.SimpleDate
 
 
-class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDisplay, val groupsDisplay: GroupsDisplay, val historyDisplay: HistoryDisplay) {
+class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDisplay, val groupsDisplay: GroupsDisplay, val historyDisplay: HistoryDisplay, val propertiesDisplay: PropertiesDisplay) {
     def createMenu() : MenuBar = {
         val menuBar = new MenuBar()
 
@@ -38,6 +38,12 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
             }
         })
         editMenu.getItems.add(addStudentItem)
+
+        val addStudentsItem = new MenuItem("Add Students from Text File")
+        addStudentsItem.setOnAction(event => {
+            studentsDisplay.loadStudentsFromFile
+        })
+        editMenu.getItems.add(addStudentsItem)
 
         val removeStudentItem = new MenuItem("Remove Student")
         removeStudentItem.setOnAction(event => {
@@ -96,6 +102,8 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
         groupsDisplay.displayExclusions(fileManager.getSchoolClass().exclusions.asScala.toList.map( pair => {
             (pair.get(0), pair.get(1))
         }))
+
+        propertiesDisplay.displayProperties(fileManager.getSchoolClass())
 
         historyDisplay.displayHistory(fileManager.getSchoolClass().history.asScala.toList)
     }
@@ -215,6 +223,6 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
 }
 
 object MainMenu {
-    def apply(fileManager: ClassFileManager, studentDisplay: StudentDisplay, groupsDisplay: GroupsDisplay, historyView: HistoryView) =
-        new MainMenu(fileManager, studentDisplay, groupsDisplay, historyView)
+    def apply(fileManager: ClassFileManager, studentDisplay: StudentDisplay, groupsDisplay: GroupsDisplay, historyView: HistoryView, propertiesDisplay: PropertiesDisplay) =
+        new MainMenu(fileManager, studentDisplay, groupsDisplay, historyView,propertiesDisplay)
 }

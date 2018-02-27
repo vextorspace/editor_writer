@@ -2,11 +2,13 @@ package com.ronnev.editorselection.ui
 
 import com.ronnev.editorselection.StudentChangedListener
 import javafx.collections.{FXCollections, ObservableList}
-import javafx.scene.control.{Button, ListView, TextField}
+import javafx.scene.control._
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.{HBox, Priority, VBox}
+import javafx.stage.FileChooser
 
 import scala.collection.mutable
+import scala.io.Source
 
 class StudentsView() extends VBox with StudentDisplay {
     val studentsAddedListeners = mutable.MutableList.empty[StudentChangedListener]
@@ -14,17 +16,17 @@ class StudentsView() extends VBox with StudentDisplay {
     private val studentsListView = new ListView[String]()
     private val newStudentTextField = new TextField()
 
-
     val studentsModel: ObservableList[String] = FXCollections.observableArrayList()
 
     studentsListView.setEditable(false)
     studentsListView.setItems(studentsModel)
+    studentsListView.getSelectionModel.setSelectionMode(SelectionMode.MULTIPLE)
     VBox.setVgrow(studentsListView, Priority.ALWAYS)
 
     getChildren.addAll(studentsListView, initNewStudentRow, initRemoveStudentRow)
 
 
-    def selectedStudent() = studentsListView.getSelectionModel.getSelectedItem
+    def selectedStudents() = studentsListView.getSelectionModel.getSelectedItems
 
     override def displayStudents(students: List[String]) : Unit = {
         studentsModel.clear()
@@ -48,7 +50,6 @@ class StudentsView() extends VBox with StudentDisplay {
 
         val addButton = new Button("Add")
 
-
         addButton.setOnAction(event => newStudentAction)
 
         hBox.getChildren.add(addButton)
@@ -70,10 +71,11 @@ class StudentsView() extends VBox with StudentDisplay {
         removeButton.setMaxWidth(Double.MaxValue)
 
         removeButton.setOnAction(event => {
-            if (!selectedStudent().isEmpty) {
-                studentsAddedListeners.foreach(_.onRemoved(selectedStudent()))
-                studentsModel.remove(selectedStudent())
-            }
+
+            selectedStudents().forEach(student => {
+                studentsAddedListeners.foreach(_.onRemoved(student))
+                studentsModel.remove(student)
+            })
         })
 
         hBox.getChildren.add(removeButton)
@@ -81,6 +83,19 @@ class StudentsView() extends VBox with StudentDisplay {
         hBox
     }
 
+    override def loadStudentsFromFile(): Unit = {
+        val fileChooser = new FileChooser()
+        fileChooser.setTitle("Open Students Text File")
+        fileChooser.getExtensionFilters.addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"), new FileChooser.ExtensionFilter("All Files", "*.*"))
+
+        val file = fileChooser.showOpenDialog(this.getScene.getWindow)
+
+        if (file != null) {
+            val bufferedSource = Source.fromFile(file)
+            bufferedSource.getLines().foreach(student => addStudent(student))
+            bufferedSource.close()
+        }
+    }
 }
 
 object StudentsView {

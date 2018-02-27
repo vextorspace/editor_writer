@@ -9,7 +9,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 
 import com.ronnev.editorselection.files.{ActualFileSaver, ClassFileManager, DialogSaveFileGetter, DialogSaveFirstAlerter}
-import com.ronnev.editorselection.ui.{GroupsView, HistoryView, MainMenu, StudentsView}
+import com.ronnev.editorselection.ui._
 
 class EditorSelection extends Application {
 
@@ -18,6 +18,35 @@ class EditorSelection extends Application {
     override def start(primaryStage: Stage): Unit = {
         fileManager = new ClassFileManager(ActualFileSaver, new DialogSaveFileGetter(primaryStage), DialogSaveFirstAlerter)
 
+        val groupsView = GroupsView()
+
+        val studentsView = StudentsView()
+        studentsView.studentsAddedListeners += fileManager
+        studentsView.studentsAddedListeners += groupsView
+
+        val historyView = HistoryView()
+        HBox.setHgrow(historyView, Priority.ALWAYS)
+
+        val propertiesView = PropertiesView(fileManager)
+
+        val groupButtonBox = initGroupButtonBox(studentsView, groupsView)
+
+        val sceneBox: VBox = setupScene(primaryStage, propertiesView, groupsView, studentsView, historyView, groupButtonBox)
+
+        setupMenu(groupsView, propertiesView, studentsView, historyView, sceneBox)
+
+        primaryStage.show()
+    }
+
+    private def setupMenu(groupsView: GroupsView, propertiesDisplay: PropertiesDisplay, studentsView: StudentsView, historyView: HistoryView, sceneBox: VBox) = {
+        sceneBox
+            .getChildren()
+            .add(0,
+                MainMenu(fileManager, studentsView, groupsView, historyView, propertiesDisplay).createMenu()
+            )
+    }
+
+    private def setupScene(primaryStage: Stage, propertiesView: PropertiesView, groupsView: GroupsView, studentsView: StudentsView, historyView: HistoryView, groupButtonBox: VBox) = {
         primaryStage.setTitle("Messages")
         val sceneBox = new VBox()
         val scene = new Scene(sceneBox, 400, 350)
@@ -29,42 +58,31 @@ class EditorSelection extends Application {
 
         sceneBox.getChildren.add(mainBox)
 
-        val groupsView = GroupsView()
-        val studentsView = StudentsView()
-        studentsView.studentsAddedListeners += fileManager
-        studentsView.studentsAddedListeners += groupsView
-        val historyView = HistoryView()
-
-        val groupButtonBox = initGroupButtonBox(studentsView, groupsView)
-
-        mainBox.getChildren.addAll(studentsView, groupButtonBox, groupsView, historyView)
+        val firstColumn = new VBox()
+        firstColumn.getChildren.addAll(propertiesView, studentsView)
+        VBox.setVgrow(propertiesView, Priority.NEVER)
+        VBox.setVgrow(studentsView, Priority.ALWAYS)
+        mainBox.getChildren.addAll(firstColumn, groupButtonBox, groupsView, historyView)
 
         primaryStage.setScene(scene)
-
         sceneBox
-            .getChildren()
-            .add(0,
-                MainMenu(fileManager, studentsView, groupsView, historyView).createMenu()
-            )
-
-        primaryStage.show()
     }
 
     private def initGroupButtonBox(studentsView: StudentsView, groupsView: GroupsView) : VBox = {
         val groupAButton = new Button("--- GroupA --->")
         groupAButton.setOnAction(event => {
-            if (!studentsView.selectedStudent().isEmpty) {
-                if (fileManager.getSchoolClass().addStudentToGroupA(studentsView.selectedStudent()))
-                    groupsView.addGroupA(studentsView.selectedStudent())
-            }
+            studentsView.selectedStudents().forEach(student => {
+                if (fileManager.getSchoolClass().addStudentToGroupA(student))
+                    groupsView.addGroupA(student)
+            })
         })
 
         val groupBButton = new Button("--- GroupB --->")
         groupBButton.setOnAction(event => {
-            if (!studentsView.selectedStudent().isEmpty) {
-                if (fileManager.getSchoolClass().addStudentToGroupB(studentsView.selectedStudent()))
-                    groupsView.addGroupB(studentsView.selectedStudent())
-            }
+            studentsView.selectedStudents().forEach(student => {
+                if (fileManager.getSchoolClass().addStudentToGroupB(student))
+                    groupsView.addGroupB(student)
+            })
         })
 
         val spacer1 = new Region()

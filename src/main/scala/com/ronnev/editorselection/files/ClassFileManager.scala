@@ -47,9 +47,10 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
     def saveAsSchoolClass() : Boolean = {
         file = saveFileGetter.getSaveFile(file)
 
-        if (file != null)
+        if (file != null) {
+            saveNeeded = false
             fileSaver.saveFile(schoolClass, file)
-        else
+        } else
             false
     }
 
@@ -58,6 +59,7 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
             file = saveFileGetter.getSaveFile()
         }
 
+        saveNeeded = false
         fileSaver.saveFile(schoolClass, file)
     }
 
@@ -84,10 +86,12 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
 
     override def onAdded(student: String) : Unit = {
         schoolClass.addStudent(student)
+        saveNeeded = true
     }
 
     override def onRemoved(student: String) : Unit = {
         schoolClass.removeStudent(student)
+        saveNeeded = true
     }
 
 }

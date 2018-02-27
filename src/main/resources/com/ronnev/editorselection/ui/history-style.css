@@ -24,6 +24,20 @@
     -fx-background-color: white;
     -fx-background-insets: 0, 1 0 1 0 ;
 }
+.historylabelcell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+    -fx-background-color: antiquewhite;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
+.oddhistorylabelcell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+    -fx-background-color: white;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
 .headercell {
     -fx-font-size: 14pt;
     -fx-font-weight: bold;
