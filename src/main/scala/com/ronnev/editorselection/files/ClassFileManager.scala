@@ -1,13 +1,16 @@
 package com.ronnev.editorselection.files
 
-import java.io.File
-
+import collection.JavaConverters._
 import com.ronnev.editorselection.{SchoolClass, StudentChangedListener}
+import com.ronnev.editorselection.reports.PDFReport
+import java.io.{File, FileOutputStream}
 import javafx.scene.control.ButtonType
+
+
 
 import scala.util.Try
 
-class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGetter, val saveFirstAlerter: SaveFirstAlerter) extends StudentChangedListener {
+class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGetter, val saveFirstAlerter: SaveFirstAlerter, val exportPDFFileGetter: ExportPDFFileGetter) extends StudentChangedListener {
     private var schoolClass: SchoolClass = SchoolClass()
     private var file: File = null
     private var saveNeeded: Boolean = false
@@ -61,6 +64,35 @@ class ClassFileManager(val fileSaver: FileSaver, val saveFileGetter: SaveFileGet
 
         saveNeeded = false
         fileSaver.saveFile(schoolClass, file)
+    }
+
+    def exportHistory() : Boolean = {
+        if (schoolClass == null)
+            return false
+
+
+        val exportFile : File =
+        if (file == null || file.isDirectory)
+            exportPDFFileGetter.getFile(new File(""))
+        else {
+            val dir = file.getParentFile
+            val index = file.getName.lastIndexOf('.')
+            val fileName : String =
+            if (index >= 0)
+                file.getName.substring(0, index)
+            else
+                file.getName
+
+            exportPDFFileGetter.getFile(new File(dir, s"$fileName.pdf"))
+        }
+
+        val outputStream = new FileOutputStream(exportFile)
+        val result = Try({
+            PDFReport(getSchoolClass().history.asScala.toList).write(outputStream)
+        })
+        outputStream.close()
+
+        return result.isSuccess
     }
 
     def newClass() : Boolean = {

@@ -1,6 +1,5 @@
 package com.ronnev.editorselection
 
-import java.nio.file.Paths
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.control.Button
@@ -8,7 +7,7 @@ import javafx.scene.layout.{HBox, Priority, Region, VBox}
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 
-import com.ronnev.editorselection.files.{ActualFileSaver, ClassFileManager, DialogSaveFileGetter, DialogSaveFirstAlerter}
+import com.ronnev.editorselection.files._
 import com.ronnev.editorselection.ui._
 
 class EditorSelection extends Application {
@@ -16,7 +15,7 @@ class EditorSelection extends Application {
     private var fileManager : ClassFileManager= null
 
     override def start(primaryStage: Stage): Unit = {
-        fileManager = new ClassFileManager(ActualFileSaver, new DialogSaveFileGetter(primaryStage), DialogSaveFirstAlerter)
+        fileManager = new ClassFileManager(ActualFileSaver, new DialogSaveFileGetter(primaryStage), DialogSaveFirstAlerter, DialogExportPDFFileGetter(primaryStage))
 
         val groupsView = GroupsView()
 

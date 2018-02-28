@@ -193,7 +193,6 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
 
         val loadMenuItem = new MenuItem("Load")
         loadMenuItem.setOnAction(event => {
-
             fileManager.loadSchoolClass()
             displayStudents
         })
@@ -210,6 +209,12 @@ class MainMenu(val fileManager: ClassFileManager, val studentsDisplay: StudentDi
             fileManager.saveAsSchoolClass()
         })
         fileMenu.getItems.add(saveAsMenuItem)
+
+        val pdfMenuItem = new MenuItem("Print PDF")
+        pdfMenuItem.setOnAction(event => {
+            fileManager.exportHistory()
+        })
+        fileMenu.getItems.add(pdfMenuItem)
 
         val exitMenuItem = new MenuItem("Exit")
         exitMenuItem.setOnAction(event => {
