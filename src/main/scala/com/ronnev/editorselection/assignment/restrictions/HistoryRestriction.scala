@@ -10,6 +10,16 @@ class HistoryRestriction(val history: List[GroupAssignment], val minDifference: 
             })
             .isEmpty
     }
+
+    override def goodComboReversed(editor: String, writerCombo: List[String]): Boolean = {
+        history.map{_.editorListFor(editor)}
+            .filterNot(writers => {
+                writerCombo.diff(writers).size >= minDifference
+            })
+            .isEmpty
+    }
+
+
 }
 
 object HistoryRestriction {

@@ -1,0 +1,47 @@
+.root {
+    -fx-font-size: 12pt;
+    -fx-padding: 20 ;
+    cell-color: white ;
+    cell-border-color: black ;
+}
+
+.grid {
+    /* 1 pixel border around the top and right of the grid: */
+    -fx-background-color: cell-border-color, cell-color ;
+    -fx-background-radius: 5.0;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;
+    -fx-padding: 10;
+}
+.historycell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-background-color: antiquewhite;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
+.oddhistorycell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-background-color: white;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
+.historylabelcell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+    -fx-background-color: antiquewhite;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
+.oddhistorylabelcell {
+    /* 1 pixel border around the left and bottom of each cell: */
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+    -fx-background-color: white;
+    -fx-background-insets: 0, 1 0 1 0 ;
+}
+.headercell {
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-font-color: red;
+    -fx-background-color: cell-border-color, cell-color ;
+    -fx-background-insets: 0, 1 1 1 1 ;
+}

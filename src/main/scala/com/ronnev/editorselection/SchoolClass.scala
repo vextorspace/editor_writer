@@ -14,7 +14,9 @@ import scala.beans.BeanProperty
 class SchoolClass {
     @BeanProperty var students: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
-    @BeanProperty var editorsPerWriter: Int = 3
+  @BeanProperty var editorsPerWriter: Int = 3
+  @BeanProperty var writersPerEditor: Int = 3
+  @BeanProperty var byEditorsPerWriter: Boolean = true
     @BeanProperty var groupA: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var groupB: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var exclusions: java.util.List[java.util.List[String]] = new util.ArrayList[util.List[String]]()
@@ -85,7 +87,10 @@ class SchoolClass {
                                                                   .union(List(HistoryRestriction(history.asScala.toList)))
         val strategy = ComboRestrictionAssignmentStrategy(restrictions)
 
+      if (byEditorsPerWriter)
         strategy.makeAssignments(group, editorsPerWriter)
+      else
+        strategy.makeAssignmentsReversed(group, writersPerEditor)
     }
 
     def acceptGroupAssignment(groupAssignment: GroupAssignment) : Unit = {

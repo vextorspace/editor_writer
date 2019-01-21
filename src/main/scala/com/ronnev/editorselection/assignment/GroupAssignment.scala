@@ -67,6 +67,15 @@ class GroupAssignment {
             List.empty
     }
 
+  def writerListFor(editor: String) : List[String] = {
+        if (writersPerEditorA().contains(editor))
+            writersPerEditorA()(editor)
+        else if (writersPerEditorB().contains(editor))
+            writersPerEditorB()(editor)
+        else
+            List.empty
+    }
+
     private def addToAssignment(assignments: java.util.Map[String, java.util.ArrayList[String]], editor: String, writer: String): Unit = {
         if (assignments.containsKey(editor)) {
             assignments.get(editor).add(writer)

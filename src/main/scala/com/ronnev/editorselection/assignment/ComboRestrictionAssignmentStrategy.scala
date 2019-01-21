@@ -6,6 +6,15 @@ import com.ronnev.math.CombinatorialOps._
 
 class ComboRestrictionAssignmentStrategy(val restrictions: List[AssignmentRestriction]) extends AssignmentStrategy {
 
+    override def makeAssignmentsReversed(unassignedGroup: GroupAssignment, writersPerEditor: Int): GroupAssignment = {
+        val newGroup = unassignedGroup.copy()
+
+        assignEditorsToWritersReversed(newGroup.groupA.asScala.toList, newGroup.groupB.asScala.toList, newGroup, writersPerEditor)
+        assignEditorsToWritersReversed(newGroup.groupB.asScala.toList, newGroup.groupA.asScala.toList, newGroup, writersPerEditor)
+
+        newGroup
+    }
+
     override def makeAssignments(unassignedGroup: GroupAssignment, editorsPerWriter: Int): GroupAssignment = {
         val newGroup = unassignedGroup.copy()
 
@@ -19,6 +28,12 @@ class ComboRestrictionAssignmentStrategy(val restrictions: List[AssignmentRestri
         val editorCombos = editors.xcombinations(editorsPerWriter)
         var editorsUsed = editors.map(editor => (editor, List.empty[String])).toMap
         writers.foreach(editorsUsed ++= ComboRestrictionAssignmentStrategy.doOneWriter(_, editorCombos, newGroup, restrictions, editorsUsed))
+    }
+
+  private def assignEditorsToWritersReversed(writers: List[String], editors: List[String], newGroup: GroupAssignment, writersPerEditor: Int) = {
+        val writerCombos = writers.xcombinations(writersPerEditor)
+        var writersUsed = writers.map(writer => (writer, List.empty[String])).toMap
+        editors.foreach(writersUsed ++= ComboRestrictionAssignmentStrategy.doOneEditor(_, writerCombos, newGroup, restrictions, writersUsed))
     }
 }
 
@@ -36,7 +51,13 @@ object ComboRestrictionAssignmentStrategy {
         restrictions.toStream.filterNot(restriction => restriction.goodCombo(writer, editorCombo)).isEmpty
     }
 
-    def doOneWriter(writer: String,
+  def checkComboReversed(editor: String, writerCombo: List[String], restrictions: List[AssignmentRestriction]) : Boolean = {
+        restrictions.toStream.filterNot(restriction => restriction.goodCombo(editor, writerCombo)).isEmpty
+    }
+
+
+
+  def doOneWriter(writer: String,
                     editorCombos: List[List[String]],
                     newGroup: GroupAssignment,
                     restrictions: List[AssignmentRestriction],
@@ -54,6 +75,32 @@ object ComboRestrictionAssignmentStrategy {
                     })
         editorsToWriters
     }
+    def doOneEditor(editor: String,
+                    writersCombos: List[List[String]],
+                    newGroup: GroupAssignment,
+                    restrictions: List[AssignmentRestriction],
+                    writersUsed : Map[String, List[String]]) :
+    Map[String, List[String]] = {
+        var writersToEditors = writersUsed
+
+        writersCombos.sortWith(
+          lessThanFunc(calculateLessersReversed(writersUsed)))
+                    .toStream
+                    .filter(checkCombo(editor, _, restrictions))(0)
+                    .foreach(writer => {
+                        newGroup.addWriterToEditor(editor, writer)
+                        writersToEditors = updateWritersToEditors(writersToEditors, (editor, writer))
+                    })
+        writersToEditors
+    }
+
+    def updateWritersToEditors(map: Map[String, List[String]],  pair: (String, String)) : Map[String, List[String]] = {
+        val map2 = Map(pair._1 -> List(pair._2))
+        (map foldLeft map2) (
+            (acc, v) => acc + (v._1 -> (v._2 ++ acc.getOrElse(v._1, List.empty[String])))
+        )
+    }
+
     def updateEditorsToWriters(map: Map[String, List[String]],  pair: (String, String)) : Map[String, List[String]] = {
         val map2 = Map(pair._1 -> List(pair._2))
         (map foldLeft map2) (
@@ -72,7 +119,19 @@ object ComboRestrictionAssignmentStrategy {
         }
     }
 
-    def applyEditors(writer: String, editors: List[String], newGroup: GroupAssignment) : Unit = {
+    private def calculateLessersReversed(writersUsed : Map[String, List[String]]) = {
+        val editorNumbersPerWriter: Map[String, Int] = writersUsed.map { case (writer, editors) => (writer, editors.size) }
+
+        if (editorNumbersPerWriter.isEmpty)
+            editorNumbersPerWriter.keys.toList
+        else {
+            val lesser = editorNumbersPerWriter.values.min
+            editorNumbersPerWriter.keys.filter(editorNumbersPerWriter(_) == lesser).toList
+        }
+    }
+
+
+  def applyEditors(writer: String, editors: List[String], newGroup: GroupAssignment) : Unit = {
         editors.foreach(editor => newGroup.addWriterToEditor(editor, writer))
     }
 
