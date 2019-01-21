@@ -52,7 +52,7 @@ object ComboRestrictionAssignmentStrategy {
     }
 
   def checkComboReversed(editor: String, writerCombo: List[String], restrictions: List[AssignmentRestriction]) : Boolean = {
-        restrictions.toStream.filterNot(restriction => restriction.goodCombo(editor, writerCombo)).isEmpty
+        restrictions.toStream.filterNot(restriction => restriction.goodComboReversed(editor, writerCombo)).isEmpty
     }
 
 
@@ -84,12 +84,12 @@ object ComboRestrictionAssignmentStrategy {
         var writersToEditors = writersUsed
 
         writersCombos.sortWith(
-          lessThanFunc(calculateLessersReversed(writersUsed)))
+          lessThanFunc(calculateLessers(writersUsed)))
                     .toStream
-                    .filter(checkCombo(editor, _, restrictions))(0)
+                    .filter(checkComboReversed(editor, _, restrictions))(0)
                     .foreach(writer => {
                         newGroup.addWriterToEditor(editor, writer)
-                        writersToEditors = updateWritersToEditors(writersToEditors, (editor, writer))
+                        writersToEditors = updateWritersToEditors(writersToEditors, (writer, editor))
                     })
         writersToEditors
     }
@@ -118,18 +118,6 @@ object ComboRestrictionAssignmentStrategy {
             writerNumbersPerEditor.keys.filter(writerNumbersPerEditor(_) == lesser).toList
         }
     }
-
-    private def calculateLessersReversed(writersUsed : Map[String, List[String]]) = {
-        val editorNumbersPerWriter: Map[String, Int] = writersUsed.map { case (writer, editors) => (writer, editors.size) }
-
-        if (editorNumbersPerWriter.isEmpty)
-            editorNumbersPerWriter.keys.toList
-        else {
-            val lesser = editorNumbersPerWriter.values.min
-            editorNumbersPerWriter.keys.filter(editorNumbersPerWriter(_) == lesser).toList
-        }
-    }
-
 
   def applyEditors(writer: String, editors: List[String], newGroup: GroupAssignment) : Unit = {
         editors.foreach(editor => newGroup.addWriterToEditor(editor, writer))

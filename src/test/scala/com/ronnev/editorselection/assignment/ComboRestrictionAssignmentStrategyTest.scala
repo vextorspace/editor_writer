@@ -5,8 +5,10 @@ import com.ronnev.editorselection.dates.SimpleDate
 import org.scalatest.FeatureSpec
 
 class ComboRestrictionAssignmentStrategyTest extends FeatureSpec {
-    feature("ComboRestrictionAssignmentStrategy creates group assignments that do not violate restrictions") {
-        scenario("An empty history restriction, no other restrictions, 3 by 3 with 2 per") {
+
+  feature("ComboRestrictionAssignmentStrategy creates group assignments that do not violate restrictions") {
+
+    scenario("An empty history restriction, no other restrictions, 3 by 3 with 2 per") {
             val restriction = HistoryRestriction(List.empty, 2)
 
             val strategy = ComboRestrictionAssignmentStrategy(List[AssignmentRestriction](restriction))
@@ -143,6 +145,74 @@ class ComboRestrictionAssignmentStrategyTest extends FeatureSpec {
             assert(result.editorsPerWriterB().map(_._2.size).filterNot(_ == 3).isEmpty)
             assert(result.writersPerEditorA().map(_._2.size).filterNot(_ == 3).isEmpty)
             assert(result.writersPerEditorB().map(_._2.size).filterNot(_ == 3).isEmpty)
+
+            assert(result.editorsPerWriterA()("fred").diff(List("wilma", "betty", "bob")).size >= 1)
+            assert(result.editorsPerWriterA()("barney").diff(List("wilma", "betty", "kate")).size >= 1)
+            assert(result.editorsPerWriterA()("ted").diff(List("wilma", "bob", "kate")).size >= 1)
+            assert(result.editorsPerWriterA()("ned").diff(List("betty", "bob", "kate")).size >= 1)
+            assert(result.editorsPerWriterB()("wilma").diff(List("fred", "barney", "ted")).size >= 1)
+            assert(result.editorsPerWriterB()("betty").diff(List("fred", "barney", "ned")).size >= 1)
+            assert(result.editorsPerWriterB()("bob").diff(List("fred", "ted", "ned")).size >= 1)
+            assert(result.editorsPerWriterB()("kate").diff(List("barney", "ted", "ned")).size >= 1)
+        }
+
+        scenario("A single history restriction, no other restrictions, reversed") {
+            val assignment = GroupAssignment("2010-01-01")
+            assignment.groupA.add("fred")
+            assignment.groupA.add("barney")
+            assignment.groupA.add("ted")
+            assignment.groupA.add("ned")
+
+            assignment.groupB.add("wilma")
+            assignment.groupB.add("betty")
+            assignment.groupB.add("bob")
+            assignment.groupB.add("kate")
+
+            assignment.addWriterToEditor("wilma", "fred")
+            assignment.addWriterToEditor("betty", "fred")
+            assignment.addWriterToEditor("bob", "fred")
+            assignment.addWriterToEditor("wilma", "barney")
+            assignment.addWriterToEditor("betty", "barney")
+            assignment.addWriterToEditor("kate", "barney")
+            assignment.addWriterToEditor("wilma", "ted")
+            assignment.addWriterToEditor("bob", "ted")
+            assignment.addWriterToEditor("kate", "ted")
+            assignment.addWriterToEditor("betty", "ned")
+            assignment.addWriterToEditor("bob", "ned")
+            assignment.addWriterToEditor("kate", "ned")
+
+            assignment.addWriterToEditor("fred", "wilma")
+            assignment.addWriterToEditor("barney", "wilma")
+            assignment.addWriterToEditor("ted", "wilma")
+            assignment.addWriterToEditor("fred", "betty")
+            assignment.addWriterToEditor("barney", "betty")
+            assignment.addWriterToEditor("ned", "betty")
+            assignment.addWriterToEditor("fred", "bob")
+            assignment.addWriterToEditor("ted", "bob")
+            assignment.addWriterToEditor("ned", "bob")
+            assignment.addWriterToEditor("barney", "kate")
+            assignment.addWriterToEditor("ted", "kate")
+            assignment.addWriterToEditor("ned", "kate")
+
+            val history: List[GroupAssignment] = List(assignment)
+
+            val restriction = HistoryRestriction(history, 1)
+
+            val strategy = ComboRestrictionAssignmentStrategy(List(restriction))
+
+            val newGroup = assignment.copy()
+            newGroup.setDate(SimpleDate("2012-01-01").get)
+
+            val result = strategy.makeAssignmentsReversed(newGroup, 3)
+
+            assert(result.writersPerEditorA().keys.size == 4)
+            assert(result.writersPerEditorB().keys.size == 4)
+            assert(result.editorsPerWriterA().keys.size == 4)
+            assert(result.editorsPerWriterB().keys.size == 4)
+            assert(result.writersPerEditorA().map(_._2.size).filterNot(_ == 3).isEmpty)
+            assert(result.writersPerEditorB().map(_._2.size).filterNot(_ == 3).isEmpty)
+            assert(result.editorsPerWriterA().map(_._2.size).filterNot(_ == 3).isEmpty)
+            assert(result.editorsPerWriterB().map(_._2.size).filterNot(_ == 3).isEmpty)
 
             assert(result.editorsPerWriterA()("fred").diff(List("wilma", "betty", "bob")).size >= 1)
             assert(result.editorsPerWriterA()("barney").diff(List("wilma", "betty", "kate")).size >= 1)

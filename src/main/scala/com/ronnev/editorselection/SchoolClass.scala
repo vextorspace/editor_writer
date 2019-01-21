@@ -9,14 +9,14 @@ import java.util.Comparator
 import com.ronnev.editorselection.assignment.restrictions.{AssignmentRestriction, BadPairRestriction, HistoryRestriction}
 import com.ronnev.editorselection.dates.SimpleDate
 
-import scala.beans.BeanProperty
+import scala.beans.{BooleanBeanProperty, BeanProperty}
 
 class SchoolClass {
     @BeanProperty var students: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var history: java.util.List[GroupAssignment] = new util.ArrayList[GroupAssignment]()
   @BeanProperty var editorsPerWriter: Int = 3
   @BeanProperty var writersPerEditor: Int = 3
-  @BeanProperty var byEditorsPerWriter: Boolean = true
+  @BooleanBeanProperty var byEditorsPerWriter: Boolean = false
     @BeanProperty var groupA: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var groupB: java.util.List[String] = new util.ArrayList[String]()
     @BeanProperty var exclusions: java.util.List[java.util.List[String]] = new util.ArrayList[util.List[String]]()
