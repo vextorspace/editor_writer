@@ -1,0 +1,25 @@
+byEditorsPerWriter: false
+editorsPerWriter: 3
+exclusions: []
+groupA: [a, b, c, d, e, f]
+groupB: [g, h, i, j, k, l]
+history:
+- assignmentsA:
+    a: [g, h, i]
+    b: [j, k, l]
+    c: [g, h, i]
+    d: [j, k, l]
+    e: [g, h, i]
+    f: [j, k, l]
+  assignmentsB:
+    g: [a, b, c]
+    h: [d, e, f]
+    i: [a, b, c]
+    j: [d, e, f]
+    k: [a, b, c]
+    l: [d, e, f]
+  date: {day: 1, month: 1, year: 2019}
+  groupA: [a, b, c, d, e, f]
+  groupB: [g, h, i, j, k, l]
+students: [a, b, c, d, e, f, g, h, i, j, k, l]
+writersPerEditor: 3
